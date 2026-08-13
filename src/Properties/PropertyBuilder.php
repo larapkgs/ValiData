@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace LaraPkgs\ValiData\Properties;
 
 use Closure;
-
 use Illuminate\Support\Facades\App;
-
 use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\Validation\Concerns\HasFluentRules;
 use LaraPkgs\Validation\Contracts\ProvidesValidatableCollection;

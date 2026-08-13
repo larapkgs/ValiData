@@ -1,0 +1,119 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LaraPkgs\ValiData;
+
+use ArrayIterator;
+use Closure;
+use Countable;
+use Illuminate\Support\Collection;
+use IteratorAggregate;
+use LaraPkgs\ValiData\Contracts\Property;
+use LaraPkgs\Validation\ValidatableCollection;
+use Traversable;
+
+/**
+ * @implements IteratorAggregate<string, Property>
+ */
+final class Schema implements Countable, IteratorAggregate
+{
+    /** @var Collection<string,Property>|null */
+    protected ?Collection $items = null;
+
+    public static function make(Property ...$items): self
+    {
+        return new self(...$items);
+    }
+
+    public function __construct(Property ...$items)
+    {
+        $this->processItems(...$items);
+    }
+
+    public function __clone()
+    {
+        $this->items = Collection::make($this->all());
+    }
+
+    protected function newInstance(?Closure $callback = null): self
+    {
+        $instance = clone $this;
+
+        return $callback !== null ? tap($instance, $callback) : $instance;
+    }
+
+    /**
+     * @return Collection<string, Property>
+     */
+    public function getItems(): Collection
+    {
+        return Collection::make($this->all());
+    }
+
+    /**
+     * @return Collection<string, Property>
+     */
+    protected function resolveItems(): Collection
+    {
+        return $this->items ??= Collection::make();
+    }
+
+    public function add(Property ...$items): self
+    {
+        return $this->newInstance(function (self $instance) use ($items) {
+            return $instance->processItems(...$items);
+        });
+    }
+
+    protected function processItems(Property ...$items): self
+    {
+        Collection::make($items)
+            ->transform(fn (Property $item) => clone $item)
+            ->each(fn (Property $item) => $this->resolveItems()->put($item->getName(), $item));
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, Property>
+     */
+    public function all(): array
+    {
+        return $this->resolveItems()->map(function (Property $item) {
+            return clone $item;
+        })->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getDefaultValues(): array
+    {
+        return $this->resolveItems()
+            ->filter(fn (Property $item) => $item->hasDefaultValue())
+            ->map(fn (Property $item) => $item->getDefaultValue())
+            ->all();
+    }
+
+    public function getValidation(): ValidatableCollection
+    {
+        $items = $this->resolveItems()->map(function (Property $item) {
+            return $item->getValidation();
+        })->all();
+
+        return ValidatableCollection::make()->merge(...$items);
+    }
+
+    // Countable implementation
+    public function count(): int
+    {
+        return $this->resolveItems()->count();
+    }
+
+    // IteratorAggregate Implementation
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->all());
+    }
+}
