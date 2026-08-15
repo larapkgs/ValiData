@@ -86,7 +86,8 @@ final class Schema implements Countable, IteratorAggregate
     }
 
     /**
-     * @return array<string, mixed>
+     * @param  array<array-key, mixed>  $payload
+     * @return array<array-key, mixed>
      */
     public function applyDefaults(array $payload): array
     {

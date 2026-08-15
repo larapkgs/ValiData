@@ -5,7 +5,6 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
 use LaraPkgs\ValiData\Schema;
 use LaraPkgs\ValiData\Snapshot;

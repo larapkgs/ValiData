@@ -47,7 +47,7 @@ trait HasValidData
      * @param  array<array-key, mixed>  $payload
      * @return array<array-key, mixed>
      */
-    protected function processPayload(array $payload, ?Schema $schema = null): array
+    protected function processPayload(array $payload, Schema $schema): array
     {
         $payload = $schema->applyDefaults($payload);
 

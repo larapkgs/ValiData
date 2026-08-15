@@ -10,6 +10,10 @@ interface Property
 {
     public function getName(): string;
 
+    /**
+     * @param  array<array-key, mixed>  $payload
+     * @return array<array-key, mixed>
+     */
     public function applyDefault(array $payload): array;
 
     public function getValidation(): ValidatableCollection;

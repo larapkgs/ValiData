@@ -70,7 +70,7 @@ final class PropertyBuilder implements Property
 
     public function applyDefault(array $payload): array
     {
-        if(!array_key_exists($key = $this->getName(), $payload) && $this->hasDefaultValue()) {
+        if (! array_key_exists($key = $this->getName(), $payload) && $this->hasDefaultValue()) {
             $payload[$key] = $this->default;
         }
 
