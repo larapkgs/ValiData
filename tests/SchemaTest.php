@@ -105,15 +105,15 @@ describe('Schema::getValidation()', function () {
     });
 });
 
-describe('Schema::getDefaulValues()', function () {
-    it('provides an array of Property defaults (if set...)', function () {
+describe('Schema::applyDefaults', function () {
+    it('applies defaults on the payload', function () {
         $schema = Schema::make(
             PropertyBuilder::make('string')->default('value'),
             PropertyBuilder::make('integer')->default(123),
             PropertyBuilder::make('defaultless')
         );
 
-        expect($schema->getDefaultValues())->toBe([
+        expect($schema->applyDefaults([]))->toBe([
             'string' => 'value',
             'integer' => 123,
         ])->not->toHaveKey('defaultless');

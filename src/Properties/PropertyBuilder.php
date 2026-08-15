@@ -63,14 +63,18 @@ final class PropertyBuilder implements Property
         });
     }
 
-    public function hasDefaultValue(): bool
+    protected function hasDefaultValue(): bool
     {
         return new ReflectionProperty($this, 'default')->isInitialized($this);
     }
 
-    public function getDefaultValue(): mixed
+    public function applyDefault(array $payload): array
     {
-        return $this->default;
+        if(!array_key_exists($key = $this->getName(), $payload) && $this->hasDefaultValue()) {
+            $payload[$key] = $this->default;
+        }
+
+        return $payload;
     }
 
     // Validation

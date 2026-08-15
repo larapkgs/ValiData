@@ -88,12 +88,11 @@ final class Schema implements Countable, IteratorAggregate
     /**
      * @return array<string, mixed>
      */
-    public function getDefaultValues(): array
+    public function applyDefaults(array $payload): array
     {
-        return $this->resolveItems()
-            ->filter(fn (Property $item) => $item->hasDefaultValue())
-            ->map(fn (Property $item) => $item->getDefaultValue())
-            ->all();
+        return $this->resolveItems()->reduce(function (array $payload, Property $property) {
+            return $property->applyDefault($payload);
+        }, $payload);
     }
 
     public function getValidation(): ValidatableCollection

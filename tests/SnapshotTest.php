@@ -5,12 +5,37 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use LaraPkgs\ValiData\Contracts\Property;
+use LaraPkgs\ValiData\Properties\PropertyBuilder;
+use LaraPkgs\ValiData\Schema;
 use LaraPkgs\ValiData\Snapshot;
 
 it('expects an payload array on instantiation', function () {
     $data = new Snapshot(['property' => 'value']);
 
     expect($data)->toBeInstanceOf(Snapshot::class);
+});
+
+it('allows an optional schema on instantiation', function () {
+    $schema = new Schema(
+        PropertyBuilder::make('property')
+    );
+
+    $data = new Snapshot(['property' => 'value'], $schema);
+
+    expect($data)->toBeInstanceOf(Snapshot::class);
+});
+
+it('applies property defaults when a schema is provided', function () {
+    $schema = new Schema(
+        PropertyBuilder::make('property')->default('value')
+    );
+
+    $data = new Snapshot([], $schema);
+    expect($data->all())->toBe(['property' => 'value']);
+
+    $data = new Snapshot(['property' => 'provided value'], $schema);
+    expect($data->all())->toBe(['property' => 'provided value']);
 });
 
 it('implements the magic __get() method that delegates to the get() method', function () {

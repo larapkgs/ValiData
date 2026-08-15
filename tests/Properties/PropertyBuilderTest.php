@@ -82,21 +82,19 @@ describe('PropertyBuilder::default()', function () {
     });
 });
 
-describe('PropertyBuilder::hasDefaultValue()', function () {
-    it('indicates if a default value is set', function () {
-        $property = PropertyBuilder::make('property');
-        expect($property->hasDefaultValue())->toBeFalse();
-
-        $updated = $property->default('value');
-        expect($updated->hasDefaultValue())->toBeTrue();
-    });
-});
-
-describe('PropertyBuilder::getDefaultValue()', function () {
-    it('provides the default value', function () {
+describe('PropertyBuilder::applyDefault', function () {
+    it('applies the default value to the payload', function () {
         $property = PropertyBuilder::make('property')->default('value');
 
-        expect($property->getDefaultValue())->toBe('value');
+        expect($property->applyDefault([]))->toBe(['property' => 'value']);
+    });
+
+    it('leaves the property value untouched when a valua is set on the payload', function () {
+        $property = PropertyBuilder::make('property')->default('value');
+
+        $payload = ['property' => 'set value'];
+
+        expect($property->applyDefault($payload))->toBe($payload);
     });
 });
 

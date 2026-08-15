@@ -10,9 +10,7 @@ interface Property
 {
     public function getName(): string;
 
-    public function hasDefaultValue(): bool;
-
-    public function getDefaultValue(): mixed;
+    public function applyDefault(array $payload): array;
 
     public function getValidation(): ValidatableCollection;
 }

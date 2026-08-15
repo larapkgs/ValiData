@@ -49,6 +49,8 @@ trait HasValidData
      */
     protected function processPayload(array $payload, ?Schema $schema = null): array
     {
+        $payload = $schema->applyDefaults($payload);
+
         return $payload;
     }
 
