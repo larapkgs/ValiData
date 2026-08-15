@@ -5,67 +5,67 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use LaraPkgs\ValiData\Node;
+use LaraPkgs\ValiData\Snapshot;
 
 it('expects an payload array on instantiation', function () {
-    $node = new Node(['property' => 'value']);
+    $data = new Snapshot(['property' => 'value']);
 
-    expect($node)->toBeInstanceOf(Node::class);
+    expect($data)->toBeInstanceOf(Snapshot::class);
 });
 
 it('implements the magic __get() method that delegates to the get() method', function () {
-    $node = new Node(['property' => 'value']);
+    $data = new Snapshot(['property' => 'value']);
 
-    expect($node->property)->toBe('value');
+    expect($data->property)->toBe('value');
 });
 
 it('implements the magic __isset() method that delegates to the has() method', function () {
-    $node = new Node([]);
-    expect(isset($node->property))->toBeFalse();
+    $data = new Snapshot([]);
+    expect(isset($data->property))->toBeFalse();
 
-    $node = new Node(['property' => 'value']);
-    expect(isset($node->property))->toBeTrue();
+    $data = new Snapshot(['property' => 'value']);
+    expect(isset($data->property))->toBeTrue();
 });
 
-describe('Node::get()', function () {
+describe('Snapshot::get()', function () {
     it('provides the value of a given property', function () {
-        $node = new Node(['property' => 'value']);
+        $data = new Snapshot(['property' => 'value']);
 
-        expect($node->get('property'))->toBe('value');
+        expect($data->get('property'))->toBe('value');
     });
 
     it('throws an exception whe trying to get the value of a non existing property', function () {
-        $node = new Node([]);
+        $data = new Snapshot([]);
 
-        expect(fn () => $node->get('property'))
+        expect(fn () => $data->get('property'))
             ->toThrow(Exception::class);
     });
 });
 
-describe('Node::has()', function () {
+describe('Snapshot::has()', function () {
     it('indicates if a given property exists', function () {
-        $node = new Node([]);
-        expect($node->has('property'))->toBeFalse();
+        $data = new Snapshot([]);
+        expect($data->has('property'))->toBeFalse();
 
-        $node = new Node(['property' => 'value']);
-        expect($node->has('property'))->toBeTrue();
+        $data = new Snapshot(['property' => 'value']);
+        expect($data->has('property'))->toBeTrue();
     });
 });
 
-describe('Node::all()', function () {
+describe('Snapshot::all()', function () {
     it('provides an array of all properties', function () {
-        $node = new Node(['property' => 'value']);
+        $data = new Snapshot(['property' => 'value']);
 
-        expect($node->all())->toBe(['property' => 'value']);
+        expect($data->all())->toBe(['property' => 'value']);
     });
 });
 
 describe('Arrayable implementation', function () {
     it('implements the Countable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(Arrayable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(Arrayable::class);
     });
 
-    describe('Node::toArray()', function () {
+    describe('Snapshot::toArray()', function () {
         it('serializes property object values that implement Arrayable', function () {
             $value = new class implements Arrayable
             {
@@ -75,9 +75,9 @@ describe('Arrayable implementation', function () {
                 }
             };
 
-            $node = new Node(['property' => $value]);
+            $data = new Snapshot(['property' => $value]);
 
-            expect($node->toArray())->toBe([
+            expect($data->toArray())->toBe([
                 'property' => [
                     'nested' => 'value',
                 ],
@@ -93,9 +93,9 @@ describe('Arrayable implementation', function () {
                 }
             };
 
-            $node = new Node(['property' => $value]);
+            $data = new Snapshot(['property' => $value]);
 
-            expect($node->toArray())->toBe([
+            expect($data->toArray())->toBe([
                 'property' => [
                     'nested' => 'value',
                 ],
@@ -111,9 +111,9 @@ describe('Arrayable implementation', function () {
                 }
             };
 
-            $node = new Node(['property' => $value]);
+            $data = new Snapshot(['property' => $value]);
 
-            expect($node->toArray())->toBe([
+            expect($data->toArray())->toBe([
                 'property' => [
                     'nested' => 'value',
                 ],
@@ -121,9 +121,9 @@ describe('Arrayable implementation', function () {
         });
 
         it('serializes array values', function () {
-            $node = new Node(['property' => ['nested' => 'value']]);
+            $data = new Snapshot(['property' => ['nested' => 'value']]);
 
-            expect($node->toArray())->toBe([
+            expect($data->toArray())->toBe([
                 'property' => [
                     'nested' => 'value',
                 ],
@@ -139,11 +139,11 @@ describe('Arrayable implementation', function () {
                 }
             };
 
-            $node = new Node(['property' => [
+            $data = new Snapshot(['property' => [
                 'nested' => $value,
             ]]);
 
-            expect($node->toArray())->toBe([
+            expect($data->toArray())->toBe([
                 'property' => [
                     'nested' => [
                         'deep_nested' => 'value',
@@ -153,64 +153,64 @@ describe('Arrayable implementation', function () {
         });
 
         it('leaves non serializable values untouched', function (mixed $value) {
-            $node = new Node(['property' => $value]);
+            $data = new Snapshot(['property' => $value]);
 
-            expect($node->toArray())->toBe(['property' => $value]);
+            expect($data->toArray())->toBe(['property' => $value]);
         })->with(['abc', 123, ['abc', '123'], new stdClass]);
     });
 });
 
 describe('ArrayAccess implementation', function () {
     it('implements the ArrayAccess interface', function () {
-        $node = new Node(['property' => 'value']);
+        $data = new Snapshot(['property' => 'value']);
 
-        expect($node)->toBeInstanceOf(ArrayAccess::class);
+        expect($data)->toBeInstanceOf(ArrayAccess::class);
     });
 
     it('throws an error when an offset is not stringable', function () {
-        $node = new Node(['property' => 'value']);
+        $data = new Snapshot(['property' => 'value']);
 
-        expect(fn () => $node->offsetGet(0))
+        expect(fn () => $data->offsetGet(0))
             ->toThrow(Exception::class);
     });
 
-    describe('Node::offsetExists()', function () {
+    describe('Snapshot::offsetExists()', function () {
         it('indicates if a given property is set', function () {
-            $node = new Node([]);
+            $data = new Snapshot([]);
 
-            expect($node->offsetExists('property'))->toBeFalse()
-                ->and(isset($node['property']))->toBeFalse();
+            expect($data->offsetExists('property'))->toBeFalse()
+                ->and(isset($data['property']))->toBeFalse();
 
-            $node = new Node(['property' => 'value']);
+            $data = new Snapshot(['property' => 'value']);
 
-            expect($node->offsetExists('property'))->toBeTrue()
-                ->and(isset($node['property']))->toBeTrue();
+            expect($data->offsetExists('property'))->toBeTrue()
+                ->and(isset($data['property']))->toBeTrue();
         });
     });
 
-    describe('Node::offsetGet()', function () {
+    describe('Snapshot::offsetGet()', function () {
         it('provides the value of a given property', function () {
-            $node = new Node(['property' => 'value']);
+            $data = new Snapshot(['property' => 'value']);
 
-            expect($node->offsetGet('property'))->toBe('value')
-                ->and($node['property'])->toBe('value');
+            expect($data->offsetGet('property'))->toBe('value')
+                ->and($data['property'])->toBe('value');
         });
     });
 
-    describe('Node::offsetSet()', function () {
+    describe('Snapshot::offsetSet()', function () {
         it('throws an exception as this is a readonly object', function () {
-            $node = new Node([]);
+            $data = new Snapshot([]);
 
-            expect(fn () => $node->offsetSet('property', 'value'))
+            expect(fn () => $data->offsetSet('property', 'value'))
                 ->toThrow(Exception::class);
         });
     });
 
-    describe('Node::offsetUnset()', function () {
+    describe('Snapshot::offsetUnset()', function () {
         it('throws an exception as this is a readonly object', function () {
-            $node = new Node([]);
+            $data = new Snapshot([]);
 
-            expect(fn () => $node->offsetUnset('property'))
+            expect(fn () => $data->offsetUnset('property'))
                 ->toThrow(Exception::class);
         });
     });
@@ -218,47 +218,47 @@ describe('ArrayAccess implementation', function () {
 
 describe('Countable implementation', function () {
     it('implements the Countable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(Countable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(Countable::class);
     });
 
-    describe('Node::count()', function () {
+    describe('Snapshot::count()', function () {
         it('counts the number of attributes in the state', function () {
-            $node = new Node([]);
+            $data = new Snapshot([]);
 
-            expect($node->count())->toBe(0)
-                ->and(count($node))->toBe(0);
+            expect($data->count())->toBe(0)
+                ->and(count($data))->toBe(0);
 
-            $node = new Node(['property1' => 'value1', 'property2' => 'value2']);
+            $data = new Snapshot(['property1' => 'value1', 'property2' => 'value2']);
 
-            expect($node->count())->toBe(2)
-                ->and(count($node))->toBe(2);
+            expect($data->count())->toBe(2)
+                ->and(count($data))->toBe(2);
         });
     });
 });
 
 describe('IteratorAggregate implementation', function () {
     it('implements the IteratorAggregate interface', function () {
-        expect(new Node([]))->toBeInstanceOf(IteratorAggregate::class);
+        expect(new Snapshot([]))->toBeInstanceOf(IteratorAggregate::class);
     });
 
-    describe('Node::getIterator()', function () {
+    describe('Snapshot::getIterator()', function () {
         it('makes the state traversable', function () {
-            $node = new Node(['property' => 'value']);
+            $data = new Snapshot(['property' => 'value']);
 
-            expect($node->getIterator())->toBeInstanceOf(ArrayIterator::class);
+            expect($data->getIterator())->toBeInstanceOf(ArrayIterator::class);
         });
     });
 });
 
 describe('Jsonable implementation', function () {
     it('implements the Jsonable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(Jsonable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(Jsonable::class);
     });
 
     it('serializes to json', function () {
-        $node = new Node(['property' => ['nested' => 'value']]);
+        $data = new Snapshot(['property' => ['nested' => 'value']]);
 
-        expect($node->toJson())->json()->toBe([
+        expect($data->toJson())->json()->toBe([
             'property' => [
                 'nested' => 'value',
             ],
@@ -269,35 +269,35 @@ describe('Jsonable implementation', function () {
         // Invalid UTF-8 sequence
         $value = "\xC3\x28";
 
-        $node = new Node(['property' => $value]);
+        $data = new Snapshot(['property' => $value]);
 
-        expect(fn () => $node->toJson())
+        expect(fn () => $data->toJson())
             ->toThrow(JsonException::class);
     });
 });
 
 describe('JsonableSerializable implementation', function () {
     it('implements the JsonSerializable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(JsonSerializable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(JsonSerializable::class);
     });
 
-    it('delegates to Node::toArray()', function () {
-        $node = new Node(['property' => ['nested' => 'value']]);
+    it('delegates to Snapshot::toArray()', function () {
+        $data = new Snapshot(['property' => ['nested' => 'value']]);
 
-        expect($node->jsonSerialize())
-            ->toBe($node->toArray());
+        expect($data->jsonSerialize())
+            ->toBe($data->toArray());
     });
 });
 
 describe('Responsable implementation', function () {
     it('implements the Responsable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(Responsable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(Responsable::class);
     });
 
     it('serializes to a response', function () {
-        $node = new Node(['property' => 'value']);
+        $data = new Snapshot(['property' => 'value']);
 
-        $response = $node->toResponse(Request::instance());
+        $response = $data->toResponse(Request::instance());
 
         expect($response)->toBeInstanceOf(JsonResponse::class)
             ->and($response->getStatusCode())->toBe(200)
@@ -307,15 +307,15 @@ describe('Responsable implementation', function () {
 
 describe('Stringable implementation', function () {
     it('implements the Stringable interface', function () {
-        expect(new Node([]))->toBeInstanceOf(Stringable::class);
+        expect(new Snapshot([]))->toBeInstanceOf(Stringable::class);
     });
 
-    describe('Node::__toString()', function () {
-        it('delegates to Node::toJson()', function () {
-            $node = new Node(['property' => ['nested' => 'value']]);
+    describe('Snapshot::__toString()', function () {
+        it('delegates to Snapshot::toJson()', function () {
+            $data = new Snapshot(['property' => ['nested' => 'value']]);
 
-            expect($node->__toString())
-                ->toBe($node->toJson());
+            expect($data->__toString())
+                ->toBe($data->toJson());
         });
     });
 });

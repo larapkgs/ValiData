@@ -9,20 +9,13 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use JsonSerializable;
+use LaraPkgs\ValiData\Schema;
 use Traversable;
 
-trait ImplementsNodeInterface
+trait HasValidData
 {
     /** @var array<array-key, mixed> */
     protected $data;
-
-    /**
-     * @param  array<array-key, mixed>  $payload
-     */
-    public function __construct(array $payload)
-    {
-        $this->data = $payload;
-    }
 
     public function __get(string $property): mixed
     {
@@ -37,6 +30,26 @@ trait ImplementsNodeInterface
     public function __toString(): string
     {
         return $this->toJson();
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $payload
+     * @return array<array-key, mixed>
+     */
+    protected function applyPayload(array $payload, ?Schema $schema = null): array
+    {
+        return $this->data = $schema !== null
+            ? $this->processPayload($payload, $schema)
+            : $payload;
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $payload
+     * @return array<array-key, mixed>
+     */
+    protected function processPayload(array $payload, ?Schema $schema = null): array
+    {
+        return $payload;
     }
 
     public function get(string $property): mixed

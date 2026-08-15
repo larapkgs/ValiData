@@ -16,7 +16,7 @@ use Stringable;
  * @extends ArrayAccess<array-key, mixed>
  * @extends IteratorAggregate<array-key, mixed>
  */
-interface Node extends Arrayable, ArrayAccess, Countable, IteratorAggregate, Jsonable, JsonSerializable, Responsable, Stringable
+interface ValidData extends Arrayable, ArrayAccess, Countable, IteratorAggregate, Jsonable, JsonSerializable, Responsable, Stringable
 {
     public function get(string $property): mixed;
 
