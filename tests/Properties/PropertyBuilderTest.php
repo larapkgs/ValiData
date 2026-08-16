@@ -98,6 +98,30 @@ describe('PropertyBuilder::applyDefault', function () {
     });
 });
 
+describe('PropertyBuilder::applyPayload', function () {
+    it('applies the property value in the payload to the data', function () {
+        $property = PropertyBuilder::make('property');
+
+        $data = [];
+        $payload = ['property' => 'value'];
+
+        $data = $property->applyPayload($payload, $data);
+
+        expect($data)->toBe($payload);
+    });
+
+    it('leaves the data untouched when no value is set for the property', function () {
+        $property = PropertyBuilder::make('property');
+
+        $data = ['property' => 'value'];
+        $payload = [];
+
+        $data = $property->applyPayload($payload, $data);
+
+        expect($data)->toBe($data);
+    });
+});
+
 describe('PropertyBuilder::validateUsing()', function () {
     it('allows to set/overwrite validation using a ValidatableCollection', function () {
         $property = PropertyBuilder::make('property');

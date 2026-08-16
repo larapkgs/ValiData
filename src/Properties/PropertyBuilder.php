@@ -77,6 +77,15 @@ final class PropertyBuilder implements Property
         return $payload;
     }
 
+    public function applyPayload(array $payload, array $data): array
+    {
+        if (array_key_exists($key = $this->getName(), $payload)) {
+            $data[$key] = $payload[$key];
+        }
+
+        return $data;
+    }
+
     // Validation
     public function validateUsing(ValidatableCollection|ProvidesValidatableCollection|ValidatableBuilder $validation): self
     {

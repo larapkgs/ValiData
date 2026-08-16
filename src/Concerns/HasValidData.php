@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaraPkgs\ValiData\Concerns;
 
 use ArrayIterator;
@@ -51,7 +53,9 @@ trait HasValidData
     {
         $payload = $schema->applyDefaults($payload);
 
-        return $payload;
+        $data = $schema->applyPayload($payload);
+
+        return $data;
     }
 
     public function get(string $property): mixed

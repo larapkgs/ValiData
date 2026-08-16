@@ -96,6 +96,17 @@ final class Schema implements Countable, IteratorAggregate
         }, $payload);
     }
 
+    /**
+     * @param  array<array-key, mixed>  $payload
+     * @return array<array-key, mixed>
+     */
+    public function applyPayload(array $payload): array
+    {
+        return $this->resolveItems()->reduce(function (array $data, Property $property) use ($payload) {
+            return $property->applyPayload($payload, $data);
+        }, []);
+    }
+
     public function getValidation(): ValidatableCollection
     {
         $items = $this->resolveItems()->map(function (Property $item) {

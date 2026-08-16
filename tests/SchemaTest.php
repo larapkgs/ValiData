@@ -120,6 +120,28 @@ describe('Schema::applyDefaults', function () {
     });
 });
 
+describe('Schema::applyPayload', function () {
+    it('applies the payload to the data', function () {
+        $schema = Schema::make(
+            PropertyBuilder::make('property1'),
+            PropertyBuilder::make('property2')
+        );
+
+        $payload = [
+            'property1' => 'value1',
+            'property2' => 'value2',
+            'property3' => 'value3',
+        ];
+
+        $data = $schema->applyPayload($payload);
+
+        expect($data)->toBe([
+            'property1' => 'value1',
+            'property2' => 'value2',
+        ]);
+    });
+});
+
 describe('Countable implementation', function () {
     it('implements the Countable interface', function () {
         expect(Schema::make())->toBeInstanceOf(Countable::class);
