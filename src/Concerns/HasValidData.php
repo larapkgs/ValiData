@@ -55,7 +55,7 @@ trait HasValidData
 
         $data = $schema->applyPayload($payload);
 
-        return $data;
+        return $schema->validate($data);
     }
 
     public function get(string $property): mixed

@@ -95,13 +95,13 @@ describe('Schema::all()', function () {
     });
 });
 
-describe('Schema::getValidation()', function () {
+describe('Schema::getValidatableCollection()', function () {
     it('provides an instance of ValidatableCollection generated on the underlying Properties', function () {
         $schema = Schema::make(
             PropertyBuilder::make('property')
         );
 
-        expect($schema->getValidation())->toBeInstanceOf(ValidatableCollection::class);
+        expect($schema->getValidatableCollection())->toBeInstanceOf(ValidatableCollection::class);
     });
 });
 

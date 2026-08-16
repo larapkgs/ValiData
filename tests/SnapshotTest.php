@@ -5,6 +5,7 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\ValidationException;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
 use LaraPkgs\ValiData\Schema;
 use LaraPkgs\ValiData\Snapshot;
@@ -35,6 +36,19 @@ it('applies property defaults when a schema is provided', function () {
 
     $data = new Snapshot(['property' => 'provided value'], $schema);
     expect($data->all())->toBe(['property' => 'provided value']);
+});
+
+it('validates the data when a schema is provided', function () {
+    $schema = new Schema(
+        PropertyBuilder::make('property')->required()
+    );
+
+    $payload = ['property' => 'value'];
+    $data = new Snapshot($payload, $schema);
+    expect($data->all())->toBe($payload);
+
+    expect(fn () => new Snapshot([], $schema))
+        ->toThrow(ValidationException::class);
 });
 
 it('implements the magic __get() method that delegates to the get() method', function () {

@@ -7,17 +7,22 @@ namespace LaraPkgs\ValiData;
 use ArrayIterator;
 use Closure;
 use Countable;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Collection;
 use IteratorAggregate;
 use LaraPkgs\ValiData\Contracts\Property;
+use LaraPkgs\Validation\Concerns\IsValidatable;
+use LaraPkgs\Validation\Contracts\Validatable;
 use LaraPkgs\Validation\ValidatableCollection;
 use Traversable;
 
 /**
  * @implements IteratorAggregate<string, Property>
  */
-final class Schema implements Countable, IteratorAggregate
+final class Schema implements Countable, IteratorAggregate, Validatable
 {
+    use IsValidatable;
+
     /** @var Collection<string,Property>|null */
     protected ?Collection $items = null;
 
@@ -107,7 +112,12 @@ final class Schema implements Countable, IteratorAggregate
         }, []);
     }
 
-    public function getValidation(): ValidatableCollection
+    public function makeValidator(array $data): Validator
+    {
+        return $this->getValidatableCollection()->makeValidator($data);
+    }
+
+    public function getValidatableCollection(): ValidatableCollection
     {
         $items = $this->resolveItems()->map(function (Property $item) {
             return $item->getValidation();
