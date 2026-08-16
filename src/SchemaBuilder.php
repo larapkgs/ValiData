@@ -11,15 +11,15 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Collection;
 use IteratorAggregate;
 use LaraPkgs\ValiData\Contracts\Property;
+use LaraPkgs\ValiData\Contracts\Schema as SchemaContract;
 use LaraPkgs\Validation\Concerns\IsValidatable;
-use LaraPkgs\Validation\Contracts\Validatable;
 use LaraPkgs\Validation\ValidatableCollection;
 use Traversable;
 
 /**
  * @implements IteratorAggregate<string, Property>
  */
-final class Schema implements Countable, IteratorAggregate, Validatable
+final class SchemaBuilder implements Countable, IteratorAggregate, SchemaContract
 {
     use IsValidatable;
 
@@ -90,10 +90,6 @@ final class Schema implements Countable, IteratorAggregate, Validatable
         })->all();
     }
 
-    /**
-     * @param  array<array-key, mixed>  $payload
-     * @return array<array-key, mixed>
-     */
     public function applyDefaults(array $payload): array
     {
         return $this->resolveItems()->reduce(function (array $payload, Property $property) {
@@ -101,10 +97,6 @@ final class Schema implements Countable, IteratorAggregate, Validatable
         }, $payload);
     }
 
-    /**
-     * @param  array<array-key, mixed>  $payload
-     * @return array<array-key, mixed>
-     */
     public function applyPayload(array $payload): array
     {
         return $this->resolveItems()->reduce(function (array $data, Property $property) use ($payload) {

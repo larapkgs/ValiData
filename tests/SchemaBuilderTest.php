@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 use Illuminate\Support\Collection;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
-use LaraPkgs\ValiData\Schema;
+use LaraPkgs\ValiData\SchemaBuilder;
 use LaraPkgs\Validation\ValidatableCollection;
 
 beforeEach(function () {
     $this->helpers = new class
     {
-        public function getItems(Schema $subject): ?Collection
+        public function getItems(SchemaBuilder $subject): ?Collection
         {
-            return Closure::bind(static fn (Schema $schema) => $schema->items, null, $subject)($subject);
+            return Closure::bind(static fn (SchemaBuilder $schema) => $schema->items, null, $subject)($subject);
         }
     };
 });
 
 it('accepts a variadic list of Properties on instantiation', function () {
-    $schema = new Schema(
+    $schema = new SchemaBuilder(
         PropertyBuilder::make('property')
     );
 
-    expect($schema)->toBeInstanceOf(Schema::class);
+    expect($schema)->toBeInstanceOf(SchemaBuilder::class);
 });
 
 it('deep clones', function () {
-    $schema = Schema::make(
+    $schema = SchemaBuilder::make(
         $property = PropertyBuilder::make('property')
     );
 
@@ -39,19 +39,19 @@ it('deep clones', function () {
 
 });
 
-describe('Schema::make()', function () {
+describe('SchemaBuilder::make()', function () {
     it('provides a factory method that accepts a variadic list of Properties', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             PropertyBuilder::make('property')
         );
 
-        expect($schema)->toBeInstanceOf(Schema::class);
+        expect($schema)->toBeInstanceOf(SchemaBuilder::class);
     });
 });
 
-describe('Schema::getItems()', function () {
+describe('SchemaBuilder::getItems()', function () {
     it('provides a new instance of the underlying collection of items', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             $property = PropertyBuilder::make('property')
         );
 
@@ -64,9 +64,9 @@ describe('Schema::getItems()', function () {
     });
 });
 
-describe('Schema::add()', function () {
+describe('SchemaBuilder::add()', function () {
     it('allows adding a variadic list of Properties after instantiation', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             PropertyBuilder::make('property1')
         );
 
@@ -79,9 +79,9 @@ describe('Schema::add()', function () {
     });
 });
 
-describe('Schema::all()', function () {
+describe('SchemaBuilder::all()', function () {
     it('provides an array of cloned Property instances', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             $property = PropertyBuilder::make('property')
         );
 
@@ -95,9 +95,9 @@ describe('Schema::all()', function () {
     });
 });
 
-describe('Schema::getValidatableCollection()', function () {
+describe('SchemaBuilder::getValidatableCollection()', function () {
     it('provides an instance of ValidatableCollection generated on the underlying Properties', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             PropertyBuilder::make('property')
         );
 
@@ -105,9 +105,9 @@ describe('Schema::getValidatableCollection()', function () {
     });
 });
 
-describe('Schema::applyDefaults', function () {
+describe('SchemaBuilder::applyDefaults', function () {
     it('applies defaults on the payload', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             PropertyBuilder::make('string')->default('value'),
             PropertyBuilder::make('integer')->default(123),
             PropertyBuilder::make('defaultless')
@@ -120,9 +120,9 @@ describe('Schema::applyDefaults', function () {
     });
 });
 
-describe('Schema::applyPayload', function () {
+describe('SchemaBuilder::applyPayload', function () {
     it('applies the payload to the data', function () {
-        $schema = Schema::make(
+        $schema = SchemaBuilder::make(
             PropertyBuilder::make('property1'),
             PropertyBuilder::make('property2')
         );
@@ -144,12 +144,12 @@ describe('Schema::applyPayload', function () {
 
 describe('Countable implementation', function () {
     it('implements the Countable interface', function () {
-        expect(Schema::make())->toBeInstanceOf(Countable::class);
+        expect(SchemaBuilder::make())->toBeInstanceOf(Countable::class);
     });
 
     describe('State::count()', function () {
         it('counts the number of properties in the collection', function () {
-            $schema = Schema::make();
+            $schema = SchemaBuilder::make();
 
             expect($schema->count())->toBe(0)
                 ->and(count($schema))->toBe(0);
@@ -167,12 +167,12 @@ describe('Countable implementation', function () {
 
 describe('IteratorAggregate implementation', function () {
     it('implements the IteratorAggregate interface', function () {
-        expect(Schema::make())->toBeInstanceOf(IteratorAggregate::class);
+        expect(SchemaBuilder::make())->toBeInstanceOf(IteratorAggregate::class);
     });
 
     describe('State::getIterator()', function () {
         it('makes the collection traversable', function () {
-            expect(Schema::make()->getIterator())->toBeInstanceOf(ArrayIterator::class);
+            expect(SchemaBuilder::make()->getIterator())->toBeInstanceOf(ArrayIterator::class);
         });
     });
 });

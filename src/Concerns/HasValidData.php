@@ -11,7 +11,7 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use JsonSerializable;
-use LaraPkgs\ValiData\Schema;
+use LaraPkgs\ValiData\Contracts\Schema;
 use Traversable;
 
 trait HasValidData

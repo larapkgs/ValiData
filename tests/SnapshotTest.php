@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
-use LaraPkgs\ValiData\Schema;
+use LaraPkgs\ValiData\SchemaBuilder;
 use LaraPkgs\ValiData\Snapshot;
 
 it('expects an payload array on instantiation', function () {
@@ -17,7 +17,7 @@ it('expects an payload array on instantiation', function () {
 });
 
 it('allows an optional schema on instantiation', function () {
-    $schema = new Schema(
+    $schema = new SchemaBuilder(
         PropertyBuilder::make('property')
     );
 
@@ -27,7 +27,7 @@ it('allows an optional schema on instantiation', function () {
 });
 
 it('applies property defaults when a schema is provided', function () {
-    $schema = new Schema(
+    $schema = new SchemaBuilder(
         PropertyBuilder::make('property')->default('value')
     );
 
@@ -39,7 +39,7 @@ it('applies property defaults when a schema is provided', function () {
 });
 
 it('validates the data when a schema is provided', function () {
-    $schema = new Schema(
+    $schema = new SchemaBuilder(
         PropertyBuilder::make('property')->required()
     );
 

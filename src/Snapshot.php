@@ -14,7 +14,7 @@ final class Snapshot implements ValidData
     /**
      * @param  array<array-key, mixed>  $payload
      */
-    public function __construct(array $payload, ?Schema $schema = null)
+    public function __construct(array $payload, ?SchemaBuilder $schema = null)
     {
         $this->applyPayload($payload, $schema);
     }
