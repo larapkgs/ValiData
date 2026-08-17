@@ -7,7 +7,7 @@ use LaraPkgs\ValiData\SchemaBuilder;
 use LaraPkgs\Validation\ValidatableCollection;
 
 beforeEach(function () {
-    $this->property = $property = new ToOneReference('toOneReference', new SchemaBuilder(
+    $this->property = new ToOneReference('toOneReference', new SchemaBuilder(
         new PropertyBuilder('name')
             ->default('admin')
             ->required(),
@@ -34,15 +34,21 @@ describe('ToOneReference::applyDefault()', function () {
 
         $payload = $this->property->applyDefault($payload);
 
-        expect($payload)->toBe(['name' => 'admin']);
+        expect($payload)->toBe([
+            'toOneReference' => [
+                'name' => 'admin',
+            ],
+        ]);
     });
 });
 
 describe('ToOneReference::applyPayload()', function () {
     it('delegates to Schema::applyPayload()', function () {
         $payload = [
-            'name' => 'John Doe',
-            'email' => 'mail@johndoe.com',
+            'toOneReference' => [
+                'name' => 'John Doe',
+                'email' => 'mail@johndoe.com',
+            ],
         ];
 
         $data = $this->property->applyPayload($payload, []);
@@ -55,6 +61,12 @@ describe('ToOneReference::getValidation()', function () {
     it('delegates to Schema::getValidatableCollection()', function () {
         $validatable = $this->property->getValidation();
 
-        expect($validatable)->toBeInstanceOf(ValidatableCollection::class);
+        expect($validatable)
+            ->toBeInstanceOf(ValidatableCollection::class)
+            ->and($validatable->toValidatorArguments()['rules'])
+            ->toBe([
+                'toOneReference.name' => ['required'],
+                'toOneReference.email' => ['required'],
+            ]);
     });
 });

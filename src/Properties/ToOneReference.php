@@ -25,16 +25,27 @@ class ToOneReference implements Property
 
     public function applyDefault(array $payload): array
     {
-        return $this->schema->applyDefaults($payload);
+        /** @var array<array-key, mixed> $propertyPayload */
+        $propertyPayload = $payload[$key = $this->getName()] ?? [];
+
+        $payload[$key] = $this->schema->applyDefaults($propertyPayload);
+
+        return $payload;
     }
 
     public function applyPayload(array $payload, array $data): array
     {
-        return $this->schema->applyPayload($payload);
+        /** @var array<array-key, mixed> $propertyPayload */
+        $propertyPayload = $payload[$key = $this->getName()];
+
+        $data[$key] = $this->schema->applyDefaults($propertyPayload);
+
+        return $data;
     }
 
     public function getValidation(): ValidatableCollection
     {
-        return $this->schema->getValidatableCollection();
+        return $this->schema->getValidatableCollection()
+            ->prefix($this->getName());
     }
 }
