@@ -38,7 +38,7 @@ class ToOneReference implements Property
         /** @var array<array-key, mixed> $propertyPayload */
         $propertyPayload = $payload[$key = $this->getName()];
 
-        $data[$key] = $this->schema->applyDefaults($propertyPayload);
+        $data[$key] = $this->schema->applyPayload($propertyPayload);
 
         return $data;
     }
