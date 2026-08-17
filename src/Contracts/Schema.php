@@ -3,6 +3,7 @@
 namespace LaraPkgs\ValiData\Contracts;
 
 use LaraPkgs\Validation\Contracts\Validatable;
+use LaraPkgs\Validation\ValidatableCollection;
 
 interface Schema extends Validatable
 {
@@ -17,4 +18,6 @@ interface Schema extends Validatable
      * @return array<array-key, mixed>
      */
     public function applyPayload(array $payload): array;
+
+    public function getValidatableCollection(): ValidatableCollection;
 }

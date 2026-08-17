@@ -13,7 +13,8 @@ beforeEach(function () {
         {
             return new class($payload) extends ValidData
             {
-                protected function makeSchema(): Schema {
+                protected function makeSchema(): Schema
+                {
                     return SchemaBuilder::make(
                         new PropertyBuilder('property')->required()
                     );
