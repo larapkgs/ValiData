@@ -20,4 +20,10 @@ interface Schema extends Validatable
     public function applyPayload(array $payload): array;
 
     public function getValidatableCollection(): ValidatableCollection;
+
+    /**
+     * @param  array<array-key, mixed>  $data
+     * @return array<array-key, mixed>
+     */
+    public function applyCasts(array $data): array;
 }

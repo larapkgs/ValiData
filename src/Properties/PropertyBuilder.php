@@ -142,4 +142,9 @@ final class PropertyBuilder implements Property
     {
         return App::make(RuleFactory::class);
     }
+
+    public function applyCast(array $data): array
+    {
+        return $data;
+    }
 }

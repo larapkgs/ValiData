@@ -118,6 +118,13 @@ final class SchemaBuilder implements Countable, IteratorAggregate, SchemaContrac
         return ValidatableCollection::make()->merge(...$items);
     }
 
+    public function applyCasts(array $data): array
+    {
+        return $this->resolveItems()->reduce(function (array $data, Property $property) {
+            return $property->applyCast($data);
+        }, $data);
+    }
+
     // Countable implementation
     public function count(): int
     {

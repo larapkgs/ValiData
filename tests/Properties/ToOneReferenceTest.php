@@ -4,6 +4,7 @@ use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
 use LaraPkgs\ValiData\Properties\ToOneReference;
 use LaraPkgs\ValiData\SchemaBuilder;
+use LaraPkgs\ValiData\Snapshot;
 use LaraPkgs\Validation\ValidatableCollection;
 
 beforeEach(function () {
@@ -54,6 +55,23 @@ describe('ToOneReference::applyPayload()', function () {
         $data = $this->property->applyPayload($payload, []);
 
         expect($data)->toBe($payload);
+    });
+});
+
+describe('ToOneReference::applyCast()', function () {
+    it('delegates to Schema::applyCasts()', function () {
+        $data = [
+            'toOneReference' => [
+                'name' => 'John Doe',
+                'email' => 'mail@johndoe.com',
+            ],
+        ];
+
+        $casted = $this->property->applyCast($data);
+
+        expect($casted['toOneReference'])
+            ->toBeInstanceOf(Snapshot::class)
+            ->all()->toBe($data['toOneReference']);
     });
 });
 

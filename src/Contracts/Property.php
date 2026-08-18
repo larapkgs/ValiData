@@ -24,4 +24,10 @@ interface Property
     public function applyPayload(array $payload, array $data): array;
 
     public function getValidation(): ValidatableCollection;
+
+    /**
+     * @param  array<array-key, mixed>  $data
+     * @return array<array-key, mixed>
+     */
+    public function applyCast(array $data): array;
 }

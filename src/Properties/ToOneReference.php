@@ -4,6 +4,7 @@ namespace LaraPkgs\ValiData\Properties;
 
 use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\ValiData\Contracts\Schema;
+use LaraPkgs\ValiData\Snapshot;
 use LaraPkgs\Validation\ValidatableCollection;
 
 class ToOneReference implements Property
@@ -47,5 +48,19 @@ class ToOneReference implements Property
     {
         return $this->schema->getValidatableCollection()
             ->prefix($this->getName());
+    }
+
+    public function applyCast(array $data): array
+    {
+        if(array_key_exists($key = $this->getName(), $data)){
+            /** @var array<array-key, mixed> $propertyData */
+            $propertyData = $data[$key];
+
+            $casted = $this->schema->applyCasts($propertyData);
+
+            $data[$key] = new Snapshot($casted);
+        }
+
+        return $data;
     }
 }

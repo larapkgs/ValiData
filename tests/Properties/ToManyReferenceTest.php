@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Support\Collection;
 use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
 use LaraPkgs\ValiData\Properties\ToManyReference;
 use LaraPkgs\ValiData\SchemaBuilder;
+use LaraPkgs\ValiData\Snapshot;
 use LaraPkgs\Validation\ValidatableCollection;
 
 beforeEach(function () {
@@ -21,14 +23,14 @@ it('expects a name and schema on instantiation', function () {
         ->toBeInstanceOf(Property::class);
 });
 
-describe('ToOneReference::getName()', function () {
+describe('ToManyReference::getName()', function () {
     it('provides the name of the property', function () {
         expect($this->property->getName())
             ->toBe('toManyReference');
     });
 });
 
-describe('ToOneReference::applyDefault()', function () {
+describe('ToManyReference::applyDefault()', function () {
     it('delegates to Schema::applyDefault()', function () {
         $payload = [
             'toManyReference' => [
@@ -48,7 +50,7 @@ describe('ToOneReference::applyDefault()', function () {
     });
 });
 
-describe('ToOneReference::applyPayload()', function () {
+describe('ToManyReference::applyPayload()', function () {
     it('delegates to Schema::applyPayload()', function () {
         $payload = [
             'toManyReference' => [
@@ -69,7 +71,7 @@ describe('ToOneReference::applyPayload()', function () {
     });
 });
 
-describe('ToOneReference::getValidation()', function () {
+describe('ToManyReference::getValidation()', function () {
     it('delegates to Schema::getValidatableCollection()', function () {
         $validatable = $this->property->getValidation();
 
@@ -80,5 +82,31 @@ describe('ToOneReference::getValidation()', function () {
                 'toManyReference.*.name' => ['required'],
                 'toManyReference.*.email' => ['required'],
             ]);
+    });
+});
+
+describe('ToManyReference::applyCast()', function () {
+    it('delegates to Schema::applyCast()', function () {
+        $data = [
+            'toManyReference' => [
+                [
+                    'name' => 'Johanna Doe',
+                    'email' => 'mail@johannadoe.com',
+                ],
+                [
+                    'name' => 'John Doe',
+                    'email' => 'mail@johndoe.com',
+                ],
+            ],
+        ];
+
+        $casted = $this->property->applyCast($data);
+
+        expect($casted['toManyReference'])
+            ->toBeInstanceOf(Collection::class)
+            ->each(fn($value, $key) => $value
+                ->toBeInstanceof(Snapshot::class)
+                ->all()->toBe($data['toManyReference'][$key])
+            );
     });
 });

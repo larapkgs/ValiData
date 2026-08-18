@@ -233,3 +233,13 @@ describe('PropertyBuilder::getValidation()', function () {
             ->not->toBe($this->helpers->getValidation($property));
     });
 });
+
+describe('PropertyBuilder::applyCast()', function () {
+    it('leaves the data untouched by default', function () {
+        $property = PropertyBuilder::make('property');
+
+        $data = ['property' => 'value'];
+
+        expect($property->applyCast($data))->toBe($data);
+    });
+});

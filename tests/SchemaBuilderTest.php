@@ -142,6 +142,27 @@ describe('SchemaBuilder::applyPayload', function () {
     });
 });
 
+describe('SchemaBuilder::applyCasts()', function () {
+    it('casts the data', function () {
+        $schema = SchemaBuilder::make(
+            PropertyBuilder::make('property1'),
+            PropertyBuilder::make('property2')
+        );
+
+        $data = [
+            'property1' => 'value1',
+            'property2' => 'value2',
+        ];
+
+        $casted = $schema->applyCasts($data);
+
+        expect($casted)->toBe([
+            'property1' => 'value1',
+            'property2' => 'value2',
+        ]);
+    });
+});
+
 describe('Countable implementation', function () {
     it('implements the Countable interface', function () {
         expect(SchemaBuilder::make())->toBeInstanceOf(Countable::class);
