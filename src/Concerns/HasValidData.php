@@ -77,7 +77,7 @@ trait HasValidData
      */
     public function all(): array
     {
-        return $this->data;
+        return $this->toCollection()->all();
     }
 
     /**
@@ -164,6 +164,15 @@ trait HasValidData
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * @return Collection<array-key, mixed>
+     */
+    public function toCollection(): Collection
+    {
+        return Collection::make($this->data)
+            ->map(fn (mixed $value) => is_object($value) ? clone $value : $value);
     }
 
     public function toResponse($request)

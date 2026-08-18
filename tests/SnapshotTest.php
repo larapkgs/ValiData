@@ -4,6 +4,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 use LaraPkgs\ValiData\Properties\PropertyBuilder;
@@ -95,6 +96,40 @@ describe('Snapshot::all()', function () {
         $data = new Snapshot(['property' => 'value']);
 
         expect($data->all())->toBe(['property' => 'value']);
+    });
+
+    it('clones property values when they are an object', function () {
+        $data = new Snapshot([
+            'property1' => 'value',
+            'property2' => $object = new stdClass,
+        ]);
+
+        expect($data->all()['property2'])
+            ->not->toBe($object)
+            ->toEqual($object);
+    });
+});
+
+describe('Snapshot::toCollection()', function () {
+    it('provides an collection of all properties', function () {
+        $data = new Snapshot(['property' => 'value']);
+
+        expect($data->toCollection())
+            ->toBeInstanceOf(Collection::class)
+            ->all()->toBe(['property' => 'value']);
+    });
+
+    it('clones property values when they are an object', function () {
+        $data = new Snapshot([
+            'property1' => 'value',
+            'property2' => $object = new stdClass,
+        ]);
+
+        expect($data->toCollection())
+            ->get('property1')->toBe('value')
+            ->get('property2')
+            ->not->toBe($object)
+            ->toEqual($object);
     });
 });
 
@@ -194,7 +229,7 @@ describe('Arrayable implementation', function () {
             $data = new Snapshot(['property' => $value]);
 
             expect($data->toArray())->toBe(['property' => $value]);
-        })->with(['abc', 123, ['abc', '123'], new stdClass]);
+        })->with(['abc', 123, ['abc', '123']]);
     });
 });
 
