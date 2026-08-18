@@ -52,7 +52,7 @@ class ToOneReference implements Property
 
     public function applyCast(array $data): array
     {
-        if(array_key_exists($key = $this->getName(), $data)){
+        if (array_key_exists($key = $this->getName(), $data)) {
             /** @var array<array-key, mixed> $propertyData */
             $propertyData = $data[$key];
 

@@ -104,7 +104,7 @@ describe('ToManyReference::applyCast()', function () {
 
         expect($casted['toManyReference'])
             ->toBeInstanceOf(Collection::class)
-            ->each(fn($value, $key) => $value
+            ->each(fn ($value, $key) => $value
                 ->toBeInstanceof(Snapshot::class)
                 ->all()->toBe($data['toManyReference'][$key])
             );

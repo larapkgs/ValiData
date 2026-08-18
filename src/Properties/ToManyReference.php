@@ -61,13 +61,13 @@ class ToManyReference implements Property
 
     public function applyCast(array $data): array
     {
-        if(array_key_exists($key = $this->getName(), $data)){
+        if (array_key_exists($key = $this->getName(), $data)) {
             /** @var array<array-key, array<array-key, mixed>> $propertyData */
             $propertyData = $data[$key];
 
             $data[$key] = Collection::make($propertyData)
-                ->map(fn(array $itemData) => $this->schema->applyCasts($itemData))
-                ->map(fn(array $casted) => new Snapshot($casted));
+                ->map(fn (array $itemData) => $this->schema->applyCasts($itemData))
+                ->map(fn (array $casted) => new Snapshot($casted));
         }
 
         return $data;

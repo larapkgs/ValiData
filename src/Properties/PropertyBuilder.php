@@ -19,9 +19,11 @@ final class PropertyBuilder implements Property
 {
     use HasFluentRules;
 
-    protected string $name;
+    protected ?Closure $applyCastUsing = null;
 
     protected mixed $default;
+
+    protected string $name;
 
     protected ?ValidatableCollection $validation = null;
 
@@ -145,6 +147,18 @@ final class PropertyBuilder implements Property
 
     public function applyCast(array $data): array
     {
+        if ($this->applyCastUsing !== null) {
+            /** @var array<array-key, mixed> $data */
+            $data = App::call($this->applyCastUsing, ['property' => $this, 'data' => $data]);
+        }
+
         return $data;
+    }
+
+    public function applyCastUsing(Closure $callback): self
+    {
+        return $this->newInstance(function (self $instance) use ($callback) {
+            $instance->applyCastUsing = $callback;
+        });
     }
 }

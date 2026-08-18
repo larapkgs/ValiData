@@ -13,6 +13,11 @@ use LaraPkgs\Validation\ValidatableCollection;
 beforeEach(function () {
     $this->helpers = new class
     {
+        public function getApplyCastUsingProperty(PropertyBuilder $subject): ?Closure
+        {
+            return Closure::bind(static fn (PropertyBuilder $property) => $property->applyCastUsing, null, $subject)($subject);
+        }
+
         public function getValidation(PropertyBuilder $subject): ?ValidatableCollection
         {
             return Closure::bind(static fn (PropertyBuilder $property) => $property->validation, null, $subject)($subject);
@@ -241,5 +246,37 @@ describe('PropertyBuilder::applyCast()', function () {
         $data = ['property' => 'value'];
 
         expect($property->applyCast($data))->toBe($data);
+    });
+
+    it('uses custom casting logic when set', function () {
+        $property = PropertyBuilder::make('property')
+            ->applyCastUsing(function ($property, array $data) {
+                $data[$property->getName()] = (object) $data['property'];
+
+                return $data;
+            });
+
+        $data = ['property' => 'value'];
+
+        expect($property->applyCast($data)['property'])
+            ->toBeInstanceOf(StdClass::class);
+    });
+
+});
+
+describe('PropertyBuilder::applyCastUsing()', function () {
+    it('allows to set custom casting logic', function () {
+        $property = PropertyBuilder::make('property');
+
+        expect($this->helpers->getApplyCastUsingProperty($property))->toBeNull();
+
+        $callback = fn () => true;
+        $updated = $property->applyCastUsing($callback);
+
+        expect($updated)
+            ->toBeInstanceOf(PropertyBuilder::class)
+            ->not->toBe($property);
+
+        expect($this->helpers->getApplyCastUsingProperty($updated))->toBe($callback);
     });
 });
