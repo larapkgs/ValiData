@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use LaraPkgs\Contracts\Schema;
+use LaraPkgs\ValiData\SchemaBuilder;
+use LaraPkgs\ValiData\ValidData;
+
+final class {{ class }} extends ValidData
+{
+    protected function makeSchema(): Schema
+    {
+        return SchemaBuilder::make(
+            //
+        );
+    }
+}
