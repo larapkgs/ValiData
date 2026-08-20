@@ -79,6 +79,7 @@ describe('ToManyReference::getValidation()', function () {
             ->toBeInstanceOf(ValidatableCollection::class)
             ->and($validatable->toValidatorArguments()['rules'])
             ->toBe([
+                'toManyReference' => ['array'],
                 'toManyReference.*.name' => ['required'],
                 'toManyReference.*.email' => ['required'],
             ]);

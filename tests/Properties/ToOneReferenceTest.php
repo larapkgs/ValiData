@@ -83,6 +83,7 @@ describe('ToOneReference::getValidation()', function () {
             ->toBeInstanceOf(ValidatableCollection::class)
             ->and($validatable->toValidatorArguments()['rules'])
             ->toBe([
+                'toOneReference' => ['array'],
                 'toOneReference.name' => ['required'],
                 'toOneReference.email' => ['required'],
             ]);

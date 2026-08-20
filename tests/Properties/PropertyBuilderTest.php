@@ -41,7 +41,7 @@ describe('HasFluentRules', function () {
     it('uses the HadFluentRules trait', function () {
         $property = new PropertyBuilder('property');
 
-        expect(class_uses($property))->toHaveKey(HasFluentRules::class);
+        expect(class_uses_recursive($property))->toHaveKey(HasFluentRules::class);
     });
 
     it('provides fluent methods to add validation rules', function () {

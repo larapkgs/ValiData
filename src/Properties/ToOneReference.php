@@ -4,12 +4,14 @@ namespace LaraPkgs\ValiData\Properties;
 
 use LaraPkgs\ValiData\Contracts\Property;
 use LaraPkgs\ValiData\Contracts\Schema;
+use LaraPkgs\ValiData\Properties\Concerns\BaseProperty;
 use LaraPkgs\ValiData\Snapshot;
+use LaraPkgs\Validation\ValidatableBuilder;
 use LaraPkgs\Validation\ValidatableCollection;
 
 class ToOneReference implements Property
 {
-    protected string $name;
+    use BaseProperty;
 
     protected Schema $schema;
 
@@ -17,11 +19,6 @@ class ToOneReference implements Property
     {
         $this->name = $name;
         $this->schema = $schema;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 
     public function applyDefault(array $payload): array
@@ -46,8 +43,19 @@ class ToOneReference implements Property
 
     public function getValidation(): ValidatableCollection
     {
-        return $this->schema->getValidatableCollection()
+        $validation = clone $this->resolveValidation();
+
+        $childValidation = $this->schema->getValidatableCollection()
             ->prefix($this->getName());
+
+        return $validation->merge($childValidation);
+    }
+
+    public function makeValidation(): ValidatableCollection
+    {
+        return ValidatableCollection::make(
+            ValidatableBuilder::make($this->name)->array()
+        );
     }
 
     public function applyCast(array $data): array

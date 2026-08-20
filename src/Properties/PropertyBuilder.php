@@ -7,25 +7,19 @@ namespace LaraPkgs\ValiData\Properties;
 use Closure;
 use Illuminate\Support\Facades\App;
 use LaraPkgs\ValiData\Contracts\Property;
-use LaraPkgs\Validation\Concerns\HasFluentRules;
+use LaraPkgs\ValiData\Properties\Concerns\BaseProperty;
 use LaraPkgs\Validation\Contracts\ProvidesValidatableCollection;
-use LaraPkgs\Validation\Contracts\RuleFactory;
-use LaraPkgs\Validation\Contracts\ValidationRule;
 use LaraPkgs\Validation\ValidatableBuilder;
 use LaraPkgs\Validation\ValidatableCollection;
 use ReflectionProperty;
 
 final class PropertyBuilder implements Property
 {
-    use HasFluentRules;
+    use BaseProperty;
 
     protected ?Closure $applyCastUsing = null;
 
     protected mixed $default;
-
-    protected string $name;
-
-    protected ?ValidatableCollection $validation = null;
 
     public static function make(string $name): self
     {
@@ -42,19 +36,6 @@ final class PropertyBuilder implements Property
         if ($this->validation !== null) {
             $this->validation = clone $this->validation;
         }
-    }
-
-    protected function newInstance(?Closure $callback = null): self
-    {
-        $instance = clone $this;
-
-        return $callback !== null ? tap($instance, $callback) : $instance;
-    }
-
-    // Name
-    public function getName(): string
-    {
-        return $this->name;
     }
 
     // Defaults
@@ -102,47 +83,16 @@ final class PropertyBuilder implements Property
         });
     }
 
-    public function withValidation(Closure $callback): self
-    {
-        return $this->newInstance(function (self $instance) use ($callback) {
-            $instance->validation = $callback($this->resolveValidation());
-        });
-    }
-
     public function getValidation(): ValidatableCollection
     {
         return clone $this->resolveValidation();
     }
 
-    protected function resolveValidation(): ValidatableCollection
+    public function makeValidation(): ValidatableCollection
     {
-        return $this->validation ??= ValidatableCollection::make(
+        return ValidatableCollection::make(
             ValidatableBuilder::make($this->name)
         );
-    }
-
-    /**
-     * @param  array<string, mixed>  $arguments
-     */
-    protected function applyFluentRule(ValidationRule|string $rule, array $arguments = []): self
-    {
-        return $this->newInstance(function (self $instance) use ($rule, $arguments) {
-            $rule = is_string($rule)
-                ? $this->resolveRuleFactory()->make($rule, $arguments)
-                : clone $rule;
-
-            /** @var ValidatableBuilder $builder */
-            $builder = $instance->resolveValidation()->getItems()->get($this->getName());
-
-            $applied = $builder->applyRule($rule);
-
-            $instance->validation = $instance->resolveValidation()->add($applied);
-        });
-    }
-
-    protected function resolveRuleFactory(): RuleFactory
-    {
-        return App::make(RuleFactory::class);
     }
 
     public function applyCast(array $data): array
