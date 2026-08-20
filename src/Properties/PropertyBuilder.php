@@ -55,9 +55,14 @@ final class PropertyBuilder implements Property
 
     public function applyDefault(array $payload): array
     {
-        if (! array_key_exists($key = $this->getName(), $payload) && $this->hasDefaultValue()) {
-            $payload[$key] = $this->default;
+        if (array_key_exists($key = $this->getName(), $payload) || ! $this->hasDefaultValue()) {
+            return $payload;
         }
+
+        /** @var array<array-key, mixed> $payload */
+        $payload = $this->default instanceof Closure
+            ? App::call($this->default, ['property' => $this, ...compact('payload')])
+            : tap($payload, fn (array &$payload) => $payload[$key] = $this->default);
 
         return $payload;
     }

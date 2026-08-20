@@ -89,7 +89,17 @@ describe('PropertyBuilder::applyDefault', function () {
         expect($property->applyDefault([]))->toBe(['property' => 'value']);
     });
 
-    it('leaves the property value untouched when a valua is set on the payload', function () {
+    it('allows closures for custom logic', function () {
+        $property = PropertyBuilder::make('property')
+            ->default(function($property, $payload) {
+                $key = $property->getName();
+                return tap($payload, fn(&$payload) => $payload[$key] = $key . ' default');
+            });
+
+        expect($property->applyDefault([]))->toBe(['property' => 'property default']);
+    });
+
+    it('leaves the property value untouched when a value is set on the payload', function () {
         $property = PropertyBuilder::make('property')->default('value');
 
         $payload = ['property' => 'set value'];
