@@ -19,6 +19,8 @@ final class PropertyBuilder implements Property
 
     protected ?Closure $applyCastUsing = null;
 
+    protected ?Closure $applyPayloadUsing = null;
+
     protected mixed $default;
 
     public static function make(string $name): self
@@ -62,11 +64,25 @@ final class PropertyBuilder implements Property
 
     public function applyPayload(array $payload, array $data): array
     {
+        if ($this->applyPayloadUsing !== null) {
+            /** @var array<array-key, mixed> $data */
+            $data = App::call($this->applyPayloadUsing, ['property' => $this, ...compact('payload', 'data')]);
+
+            return $data;
+        }
+
         if (array_key_exists($key = $this->getName(), $payload)) {
             $data[$key] = $payload[$key];
         }
 
         return $data;
+    }
+
+    public function applyPayloadUsing(Closure $callback): self
+    {
+        return $this->newInstance(function (self $instance) use ($callback) {
+            $instance->applyPayloadUsing = $callback;
+        });
     }
 
     // Validation

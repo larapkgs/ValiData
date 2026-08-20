@@ -13,14 +13,9 @@ use LaraPkgs\Validation\ValidatableCollection;
 beforeEach(function () {
     $this->helpers = new class
     {
-        public function getApplyCastUsingProperty(PropertyBuilder $subject): ?Closure
+        public function getProtectedProperty(PropertyBuilder $subject, string $property): mixed
         {
-            return Closure::bind(static fn (PropertyBuilder $property) => $property->applyCastUsing, null, $subject)($subject);
-        }
-
-        public function getValidation(PropertyBuilder $subject): ?ValidatableCollection
-        {
-            return Closure::bind(static fn (PropertyBuilder $property) => $property->validation, null, $subject)($subject);
+            return Closure::bind(static fn (PropertyBuilder $class) => $class->{$property}, null, $subject)($subject);
         }
     };
 });
@@ -46,17 +41,17 @@ describe('HasFluentRules', function () {
 
     it('provides fluent methods to add validation rules', function () {
         $property = new PropertyBuilder('property');
-        expect($this->helpers->getValidation($property))->toBeNull();
+        expect($this->helpers->getProtectedProperty($property, 'validation'))->toBeNull();
 
         $property = $property->required();
-        expect($this->helpers->getValidation($property))->toBeInstanceOf(ValidatableCollection::class);
+        expect($this->helpers->getProtectedProperty($property, 'validation'))->toBeInstanceOf(ValidatableCollection::class);
 
         $newInstance = $property->min(10)->max(20)->applyRule(Rule::string());
         expect($newInstance)->not->toBe($property);
 
-        expect($this->helpers->getValidation($newInstance))
+        expect($this->helpers->getProtectedProperty($newInstance, 'validation'))
             ->toBeInstanceOf(ValidatableCollection::class)
-            ->not->toBe($this->helpers->getValidation($property));
+            ->not->toBe($this->helpers->getProtectedProperty($property, 'validation'));
     });
 });
 
@@ -115,6 +110,21 @@ describe('PropertyBuilder::applyPayload', function () {
         expect($data)->toBe($payload);
     });
 
+    it('uses custom hydration logic when set', function () {
+        $property = PropertyBuilder::make('property')
+            ->applyPayloadUsing(function ($property, array $data, array $payload) {
+                $data[$property->getName()] = (object) $payload['property'];
+
+                return $data;
+            });
+
+        $payload = ['property' => 'value'];
+        $data = [];
+
+        expect($property->applyPayload($payload, $data)['property'])
+            ->toBeInstanceOf(StdClass::class);
+    });
+
     it('leaves the data untouched when no value is set for the property', function () {
         $property = PropertyBuilder::make('property');
 
@@ -124,6 +134,23 @@ describe('PropertyBuilder::applyPayload', function () {
         $data = $property->applyPayload($payload, $data);
 
         expect($data)->toBe($data);
+    });
+});
+
+describe('PropertyBuilder::applyPayloadUsing()', function () {
+    it('allows to set custom hydration logic', function () {
+        $property = PropertyBuilder::make('property');
+
+        expect($this->helpers->getProtectedProperty($property, 'applyPayloadUsing'))->toBeNull();
+
+        $callback = fn () => true;
+        $updated = $property->applyPayloadUsing($callback);
+
+        expect($updated)
+            ->toBeInstanceOf(PropertyBuilder::class)
+            ->not->toBe($property);
+
+        expect($this->helpers->getProtectedProperty($updated, 'applyPayloadUsing'))->toBe($callback);
     });
 });
 
@@ -235,7 +262,7 @@ describe('PropertyBuilder::getValidation()', function () {
 
         expect($property->getValidation())
             ->toBeInstanceOf(ValidatableCollection::class)
-            ->not->toBe($this->helpers->getValidation($property));
+            ->not->toBe($this->helpers->getProtectedProperty($property, 'validation'));
     });
 });
 
@@ -268,7 +295,7 @@ describe('PropertyBuilder::applyCastUsing()', function () {
     it('allows to set custom casting logic', function () {
         $property = PropertyBuilder::make('property');
 
-        expect($this->helpers->getApplyCastUsingProperty($property))->toBeNull();
+        expect($this->helpers->getProtectedProperty($property, 'applyCastUsing'))->toBeNull();
 
         $callback = fn () => true;
         $updated = $property->applyCastUsing($callback);
@@ -277,6 +304,6 @@ describe('PropertyBuilder::applyCastUsing()', function () {
             ->toBeInstanceOf(PropertyBuilder::class)
             ->not->toBe($property);
 
-        expect($this->helpers->getApplyCastUsingProperty($updated))->toBe($callback);
+        expect($this->helpers->getProtectedProperty($updated, 'applyCastUsing'))->toBe($callback);
     });
 });
