@@ -91,9 +91,10 @@ describe('PropertyBuilder::applyDefault', function () {
 
     it('allows closures for custom logic', function () {
         $property = PropertyBuilder::make('property')
-            ->default(function($property, $payload) {
+            ->default(function ($property, $payload) {
                 $key = $property->getName();
-                return tap($payload, fn(&$payload) => $payload[$key] = $key . ' default');
+
+                return tap($payload, fn (&$payload) => $payload[$key] = $key . ' default');
             });
 
         expect($property->applyDefault([]))->toBe(['property' => 'property default']);
